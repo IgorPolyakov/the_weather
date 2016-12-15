@@ -9,6 +9,7 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/weather.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -53,51 +54,94 @@
         </div>
         <div class="panel-body">
             <p id="demo">
-                Some data
+                <canvas id="myChart" width="200" height="100"></canvas>
             </p>
         </div>
+        <div class="panel-footer">
+            <div class="row">
+                <div id="small-img" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center">
+                    <ul>
+                        <li>
+                            <img src="img/Null.png" id="first" class="img-responsive inline-block" alt="Responsive image" />
+                        </li>
+                        <li>
+                            <img src="img/Null.png" id="second" class="img-responsive inline-block" alt="Responsive image" />
+                        </li>
+                        <li>
+                            <img src="img/Null.png" id="third" class="img-responsive inline-block" alt="Responsive image" />
+                        </li>
+                        <li>
+                            <img src="img/Null.png" id="four" class="img-responsive inline-block" alt="Responsive image" />
+                        </li>
+                        <li>
+                            <img src="img/Null.png" id="fifth" class="img-responsive inline-block" alt="Responsive image" />
+                        </li>
+                        <li>
+                            <img src="img/Null.png" id="six" class="img-responsive inline-block" alt="Responsive image" />
+                        </li>
+                        <li>
+                            <img src="img/Null.png" id="seven" class="img-responsive inline-block" alt="Responsive image" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-    <!--<canvas id="myChart" width="400" height="400"></canvas>-->
 </div>
 
 <script>
-    var ctx = document.getElementById("myChart");
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
-                    }
+    function drawStatusWeather(condition_array){
+//        for(var i = 0; i < condition_array.length; i++ ){
+//            document.getElementById("info").src = condition_array;
+//        }
+        document.getElementById("first").src = "img/" + condition_array[0] + ".png";
+        document.getElementById("second").src = "img/" + condition_array[1] + ".png";
+        document.getElementById("third").src = "img/" + condition_array[2] + ".png";
+        document.getElementById("four").src = "img/" + condition_array[3] + ".png";
+        document.getElementById("fifth").src = "img/" + condition_array[4] + ".png";
+        document.getElementById("six").src = "img/" + condition_array[5] + ".png";
+        document.getElementById("seven").src = "img/" + condition_array[6] + ".png";
+    };
+    function drawWeather(some_data, day_array) {
+        console.log(some_data);
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: day_array, //["Red", "Blue", "Yellow", "Green", "Purple", "Orange", "Yellow", "Green", "Purple", "Orange"],
+                datasets: [{
+                    label: '# weather',
+                    data: some_data,//[12, 19, 3, 5, 2, 3],
+//                    backgroundColor: [
+//                        'rgba(255, 99, 132, 0.2)',
+//                        'rgba(54, 162, 235, 0.2)',
+//                        'rgba(255, 206, 86, 0.2)',
+//                        'rgba(75, 192, 192, 0.2)',
+//                        'rgba(153, 102, 255, 0.2)',
+//                        'rgba(255, 159, 64, 0.2)'
+//                    ],
+//                    borderColor: [
+//                        'rgba(255,99,132,1)',
+//                        'rgba(54, 162, 235, 1)',
+//                        'rgba(255, 206, 86, 1)',
+//                        'rgba(75, 192, 192, 1)',
+//                        'rgba(153, 102, 255, 1)',
+//                        'rgba(255, 159, 64, 1)'
+//                    ],
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
             }
-        }
-    });
+        });
+    }
 </script>
 <script>
     function getWeather() {
@@ -105,29 +149,37 @@
         var xhttp = new XMLHttpRequest();
         var result = '';
         var text = '';
+        var data_forecast = '';
+
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 if(this.responseText) {
                     try {
                         result = JSON.parse(this.responseText);
+                        data_forecast = result.query.results.channel.item.forecast;
+                        document.getElementById("info").innerHTML = result.query.results.channel.title;
+                        parseWeather(data_forecast);
                     } catch(e) {
-                        alert(e); // error in the above string (in this case, yes)!
+                        alert('Try again, Yahoo is not answer'); // error in the above string (in this case, yes)!
                     }
                 }
-                console.log(result);
-//                document.getElementById("demo").innerHTML = result.query.results.channel.item.forecast;
-                data_forecast = result.query.results.channel.item.forecast;
-                for (i = 0; i < data_forecast.length; i++) {
-                    text += data_forecast[i].day + "<br>";
-                }
-                console.log(text);
-                document.getElementById("demo").innerHTML = text;
-                document.getElementById("info").innerHTML = result.query.results.channel.title;
             }
         };
         xhttp.open('get', locationUrl, true);
         xhttp.send();
     };
+    function parseWeather(data_forecast) {
+        var weather_array = [];
+        var day_array = [];
+        var condition_array = [];
+        for (var i = 0; i < 7; i++) { //data_forecast.length; i++) {
+            weather_array.push(data_forecast[i].low);
+            day_array.push(data_forecast[i].day);
+            condition_array.push(data_forecast[i].text);
+        }
+        drawWeather(weather_array, day_array);
+        drawStatusWeather(condition_array);
+    }
 </script>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

@@ -1,0 +1,14 @@
+.row li {
+    width: 14%;
+    float: left;
+}
+ul {
+    list-style-type: none;
+}
+img {
+    border: 0 none;
+    display: inline-block;
+    height: auto;
+    max-width: 100%;
+    vertical-align: middle;
+}
